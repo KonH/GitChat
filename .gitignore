@@ -1,0 +1,7 @@
+.idea
+GitChat/bin
+GitChat/obj
+Library/bin
+Library/obj
+Tests/bin
+Tests/obj
