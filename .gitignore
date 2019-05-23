@@ -5,3 +5,5 @@ Library/bin
 Library/obj
 Tests/bin
 Tests/obj
+Temp
+GitChat/.cache
