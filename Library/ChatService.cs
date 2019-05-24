@@ -26,12 +26,12 @@ namespace GitChat.Library {
 		}
 
 		Message ConvertStringToMessage(string str) {
-			var parts = str.Split(':');
-			if ( parts.Length < 2 ) {
+			var delimiterIndex = str.IndexOf(":");
+			if ( delimiterIndex < 0 ) {
 				return null;
 			}
-			var author = parts[0];
-			var message = parts[1].Substring(1);
+			var author = str.Substring(0, delimiterIndex);
+			var message = str.Substring(delimiterIndex + 2);
 			var isCurrentUser = (author == _userName);
 			return new Message(author, message, isCurrentUser);
 		}
