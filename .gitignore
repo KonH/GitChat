@@ -7,3 +7,4 @@ Tests/bin
 Tests/obj
 Temp
 GitChat/.cache
+.DS_Store

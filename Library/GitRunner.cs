@@ -32,6 +32,7 @@ namespace GitChat.Library {
 		}
 
 		public void SendMessage(string message) {
+			Pull();
 			Commit(message);
 			Push();
 		}
