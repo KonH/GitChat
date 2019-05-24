@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -23,12 +24,7 @@ namespace GitChat.Library {
 			if ( Directory.Exists(WorkingDirectory) ) {
 				return;
 			}
-			var startInfo = new ProcessStartInfo {
-				FileName = "git",
-				Arguments = "clone " + _originUrl,
-				WorkingDirectory = _storage.RootPath
-			};
-			Process.Start(startInfo).WaitForExit();
+			Git("clone " + _originUrl, _storage.RootPath);
 		}
 
 		public void SendMessage(string message) {
@@ -43,56 +39,46 @@ namespace GitChat.Library {
 		}
 
 		public string GetUserName() {
-			var startInfo = new ProcessStartInfo {
-				FileName               = "git",
-				Arguments              = $"config user.name",
-				WorkingDirectory       = WorkingDirectory,
-				RedirectStandardOutput = true
-			};
-			var proc = Process.Start(startInfo);
-			proc.WaitForExit();
-			var output = proc.StandardOutput.ReadToEnd();
-			return output;
+			return Git("config user.name");
 		}
 		
 		void Commit(string message) {
-			var startInfo = new ProcessStartInfo {
-				FileName         = "git",
-				Arguments        = $"commit -m \"{message}\" --allow-empty",
-				WorkingDirectory = WorkingDirectory
-			};
-			Process.Start(startInfo).WaitForExit();
+			Git($"commit -m \"{message}\" --allow-empty");
 		}
 
 		void Push() {
-			var startInfo = new ProcessStartInfo {
-				FileName         = "git",
-				Arguments        = $"push",
-				WorkingDirectory = WorkingDirectory
-			};
-			Process.Start(startInfo).WaitForExit();
+			Git("push");
 		}
 
 		void Pull() {
-			var startInfo = new ProcessStartInfo {
-				FileName         = "git",
-				Arguments        = $"pull",
-				WorkingDirectory = WorkingDirectory
-			};
-			Process.Start(startInfo).WaitForExit();
+			Git("pull");
 		}
 
 		string[] Log() {
+			return Git("log --format=\"%an: %s\"").Split('\n');
+		}
+
+		string Git(string command, string workingDirectory = null) {
+			if ( workingDirectory == null ) {
+				workingDirectory = WorkingDirectory;
+			}
 			var startInfo = new ProcessStartInfo {
 				FileName               = "git",
-				Arguments              = $"log --format=\"%an: %s\"",
-				WorkingDirectory       = WorkingDirectory,
-				RedirectStandardOutput = true
+				Arguments              = command,
+				WorkingDirectory       = workingDirectory,
+				RedirectStandardOutput = true,
+				RedirectStandardError  = true,
 			};
 			var proc = Process.Start(startInfo);
-			proc.WaitForExit();
-			var output = proc.StandardOutput.ReadToEnd();
-			return output.Split('\n');
+			if ( proc != null ) {
+				proc.WaitForExit();
+				var error = proc.StandardError.ReadToEnd();
+				if ( !string.IsNullOrWhiteSpace(error) ) {
+					Console.WriteLine(error);
+				}
+				return proc.StandardOutput.ReadToEnd();
+			}
+			return string.Empty;
 		}
 	}
 }
