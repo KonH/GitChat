@@ -7,9 +7,9 @@ namespace GitChat.Library {
 		
 		readonly CacheStorage _storage;
 
-		public GitRunner(CacheStorage storage, string originUrl = null, string repoPath = null) {
+		public GitRunner(CacheStorage storage, string originUrl = null, string repoName = null) {
 			_storage   = storage;
-			WorkingDirectory = repoPath ?? GetWorkingDirectoryFromOrigin(originUrl);
+			WorkingDirectory = (repoName != null) ? Path.Combine(_storage.RootPath, repoName) : GetWorkingDirectoryFromOrigin(originUrl);
 			
 			TryClone(originUrl);
 		}
