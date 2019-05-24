@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -57,7 +56,7 @@ namespace GitChat.Library {
 		}
 
 		string[] Log() {
-			return Git("log --format=\"%ar^%an:%s\" --no-merges").stdout.Split('\n');
+			return Git("log -n 15 --format=\"%ar^%an:%s\" --no-merges").stdout.Split('\n');
 		}
 
 		(string stdout, string stderror) Git(string command, string workingDirectory = null) {
