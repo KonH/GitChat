@@ -30,7 +30,9 @@ namespace GitChat.Library {
 		public void SendMessage(string message) {
 			Pull();
 			Commit(message);
-			Push();
+			while ( Push().stderror.Contains("Updates were rejected because the remote contains work") ) {
+				Pull();
+			}
 		}
 
 		public string[] ReadMessages() {
@@ -39,15 +41,15 @@ namespace GitChat.Library {
 		}
 
 		public string GetUserName() {
-			return Git("config user.name");
+			return Git("config user.name").stdout;
 		}
 		
 		void Commit(string message) {
 			Git($"commit -m \"{message}\" --allow-empty");
 		}
 
-		void Push() {
-			Git("push");
+		(string stdout, string stderror) Push() {
+			return Git("push");
 		}
 
 		void Pull() {
@@ -55,10 +57,10 @@ namespace GitChat.Library {
 		}
 
 		string[] Log() {
-			return Git("log --format=\"%an: %s\"").Split('\n');
+			return Git("log --format=\"%an: %s\" --no-merges").stdout.Split('\n');
 		}
 
-		string Git(string command, string workingDirectory = null) {
+		(string stdout, string stderror) Git(string command, string workingDirectory = null) {
 			if ( workingDirectory == null ) {
 				workingDirectory = WorkingDirectory;
 			}
@@ -73,12 +75,10 @@ namespace GitChat.Library {
 			if ( proc != null ) {
 				proc.WaitForExit();
 				var error = proc.StandardError.ReadToEnd();
-				if ( !string.IsNullOrWhiteSpace(error) ) {
-					Console.WriteLine(error);
-				}
-				return proc.StandardOutput.ReadToEnd();
+				var output = proc.StandardOutput.ReadToEnd();
+				return (output, error);
 			}
-			return string.Empty;
+			return (string.Empty, string.Empty);
 		}
 	}
 }
