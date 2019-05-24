@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 
 namespace GitChat.Library {
 	public sealed class CacheStorage {
@@ -20,6 +21,13 @@ namespace GitChat.Library {
 			if ( Directory.Exists(RootPath) ) {
 				Directory.Delete(RootPath, true);
 			}
+		}
+
+		public string[] FindRepositories() {
+			return Directory.EnumerateDirectories(RootPath)
+				.Where(dir => Directory.Exists(Path.Combine(dir, ".git")))
+				.Select(dir => Path.GetRelativePath(RootPath, dir))
+				.ToArray();
 		}
 	}
 }

@@ -5,12 +5,18 @@ namespace GitChat {
 	class Program {
 		static void Main(string[] args) {
 			var storagePath = ".cache";
-			Console.WriteLine("Your repository URL:");
-			var originUrl = Console.ReadLine();
-			var service = new ChatService(originUrl);
+			var storage = new CacheStorage(storagePath);
+			ChatService service;
+			var repos = storage.FindRepositories();
+			if ( repos.Length > 0 ) {
+				service = new ChatService(storage, repoName: repos[0]);
+			} else {
+				Console.WriteLine("Your repository URL:");
+				var originUrl = Console.ReadLine();
+				service = new ChatService(storage, originUrl: originUrl);
+			}
 			while ( true ) {
 				Console.Clear();
-				Console.WriteLine(originUrl);
 				var messages = service.ReadMessages();
 				foreach ( var msg in messages ) {
 					Console.Write(msg.Time);

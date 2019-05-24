@@ -6,24 +6,28 @@ namespace GitChat.Library {
 		public readonly string WorkingDirectory;
 		
 		readonly CacheStorage _storage;
-		readonly string       _originUrl;
 
-		public GitRunner(CacheStorage storage, string originUrl) {
+		public GitRunner(CacheStorage storage, string originUrl = null, string repoPath = null) {
 			_storage   = storage;
-			_originUrl = originUrl;
-
-			var lastSlashIndex = _originUrl.LastIndexOf('/');
-			var repoName = _originUrl.Substring(lastSlashIndex + 1);
-			WorkingDirectory = Path.Combine(_storage.RootPath, repoName);
-
-			TryClone();
+			WorkingDirectory = repoPath ?? GetWorkingDirectoryFromOrigin(originUrl);
+			
+			TryClone(originUrl);
 		}
 		
-		void TryClone() {
+		void TryClone(string originUrl) {
+			if ( string.IsNullOrEmpty(originUrl) ) {
+				return;
+			}
 			if ( Directory.Exists(WorkingDirectory) ) {
 				return;
 			}
-			Git("clone " + _originUrl, _storage.RootPath);
+			Git("clone " + originUrl, _storage.RootPath);
+		}
+
+		string GetWorkingDirectoryFromOrigin(string originUrl) {
+			var lastSlashIndex = originUrl.LastIndexOf('/');
+			var repoName       = originUrl.Substring(lastSlashIndex + 1);
+			return Path.Combine(_storage.RootPath, repoName);
 		}
 
 		public void SendMessage(string message) {

@@ -7,9 +7,9 @@ namespace GitChat.Library {
 		readonly GitRunner    _git;
 		readonly string       _userName;
 		
-		public ChatService(string originUrl) {
-			_storage  = new CacheStorage(".cache");
-			_git      = new GitRunner(_storage, originUrl);
+		public ChatService(CacheStorage storage, string originUrl = null, string repoName = null) {
+			_storage  = storage;
+			_git      = new GitRunner(_storage, originUrl, repoName);
 			_userName = _git.GetUserName().Trim();
 		}
 
