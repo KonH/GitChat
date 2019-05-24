@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace GitChat.Library {
@@ -26,14 +27,16 @@ namespace GitChat.Library {
 		}
 
 		Message ConvertStringToMessage(string str) {
-			var delimiterIndex = str.IndexOf(":");
-			if ( delimiterIndex < 0 ) {
+			var timeDelimiter = str.IndexOf("^", StringComparison.Ordinal);
+			var nameDelimiter = str.IndexOf(":", StringComparison.Ordinal);
+			if ( (timeDelimiter < 0) || (nameDelimiter < 0) ) {
 				return null;
 			}
-			var author = str.Substring(0, delimiterIndex);
-			var message = str.Substring(delimiterIndex + 2);
+			var time = str.Substring(0, timeDelimiter);
+			var author = str.Substring(timeDelimiter + 1, nameDelimiter - timeDelimiter - 1);
+			var message = str.Substring(nameDelimiter + 1);
 			var isCurrentUser = (author == _userName);
-			return new Message(author, message, isCurrentUser);
+			return new Message(time, author, message, isCurrentUser);
 		}
 	}
 }

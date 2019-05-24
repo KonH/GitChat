@@ -13,6 +13,8 @@ namespace GitChat {
 				Console.WriteLine(originUrl);
 				var messages = service.ReadMessages();
 				foreach ( var msg in messages ) {
+					Console.Write(msg.Time);
+					Console.Write(" ");
 					WriteWithColor(msg.Author, msg.IsCurrentUser ? ConsoleColor.Green : ConsoleColor.Yellow);
 					Console.Write(": ");
 					Console.Write(msg.Content);
