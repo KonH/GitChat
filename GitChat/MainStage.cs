@@ -59,8 +59,10 @@ namespace GitChat {
 		}
 
 		void RenderCurrentMessages() {
+			Console.WriteLine();
 			if ( State.OrderedServices.Count == 0 ) {
 				Console.WriteLine("No repositories in cache");
+				Console.WriteLine();
 				return;
 			}
 			var service = State.CurrentService;
@@ -76,6 +78,7 @@ namespace GitChat {
 			if ( service.HasMessagesBelow ) {
 				Console.WriteLine("...");
 			}
+			Console.WriteLine();
 		}
 
 		void RenderFooter() {
