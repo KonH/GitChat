@@ -17,9 +17,10 @@ namespace GitChat.Library {
 			Directory.CreateDirectory(RootPath);
 		}
 
-		public void Clear(string workingDirectory) {
-			if ( Directory.Exists(workingDirectory) ) {
-				Directory.Delete(workingDirectory, true);
+		public void Clear(string repoName) {
+			var path = Path.Combine(RootPath, repoName);
+			if ( Directory.Exists(path) ) {
+				Directory.Delete(path, true);
 			}
 		}
 		

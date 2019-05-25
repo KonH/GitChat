@@ -13,7 +13,7 @@ namespace GitChat {
 		public override void Input() {
 			var repoUrl = Console.ReadLine();
 			var service = new ChatService(State.Storage, originUrl: repoUrl);
-			State.Services[service.WorkingDirectory] = service;
+			State.Services[service.RepoName] = service;
 			NewStage = new MainStage(State);
 		}
 	}

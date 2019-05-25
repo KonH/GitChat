@@ -84,8 +84,8 @@ namespace GitChat {
 
 		void RemoveCurrent() {
 			var service = State.OrderedServices[State.SelectedService];
-			State.Storage.Clear(service.WorkingDirectory);
-			State.Services.Remove(service.WorkingDirectory);
+			State.Storage.Clear(service.RepoName);
+			State.Services.Remove(service.RepoName);
 		}
 
 		void PrevRepo() {
