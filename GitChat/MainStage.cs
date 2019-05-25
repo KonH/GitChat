@@ -68,17 +68,33 @@ namespace GitChat {
 			var service = State.CurrentService;
 			var messages = service.ReadMessages();
 			foreach ( var msg in messages ) {
-				Console.Write(msg.Time);
-				Console.Write(" ");
 				WriteWithColor(msg.Author, msg.IsCurrentUser ? ConsoleColor.Green : ConsoleColor.Yellow);
-				Console.Write(": ");
-				Console.Write(msg.Content);
+				Console.WriteLine($" ({msg.Time}):");
+				Console.WriteLine(FormatMessage(msg.Content));
 				Console.WriteLine();
 			}
 			if ( service.HasMessagesBelow ) {
 				Console.WriteLine("...");
 			}
 			Console.WriteLine();
+		}
+
+		string FormatMessage(string message) {
+			var maxLen = 80;
+			if ( message.Length > maxLen ) {
+				var whitespaceIndex = -1;
+				for ( var i = maxLen; i >= 0; i-- ) {
+					if ( char.IsWhiteSpace(message[i]) ) {
+						whitespaceIndex = i;
+						break;
+					}
+				}
+				if ( whitespaceIndex >= 0 ) {
+					var rest = FormatMessage(message.Substring(whitespaceIndex + 1));
+					return FormatMessage(message.Substring(0, whitespaceIndex)) + "\n" + rest;
+				}
+			}
+			return new string(' ', 3) + message;
 		}
 
 		void RenderFooter() {
