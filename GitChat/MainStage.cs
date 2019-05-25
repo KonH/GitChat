@@ -9,6 +9,7 @@ namespace GitChat {
 			KeyMapping[ConsoleKey.L] = NextRepo;
 			KeyMapping[ConsoleKey.O] = ChangeToOpen;
 			KeyMapping[ConsoleKey.Y] = RemoveCurrent;
+			KeyMapping[ConsoleKey.I] = ReplyCurrent;
 		}
 
 		public override void Update() {
@@ -86,6 +87,10 @@ namespace GitChat {
 			var service = State.CurrentService;
 			State.Storage.Clear(service.RepoName);
 			State.Services.Remove(service.RepoName);
+		}
+		
+		void ReplyCurrent() {
+			NewStage = new ReplyStage(State);
 		}
 
 		void PrevRepo() {
