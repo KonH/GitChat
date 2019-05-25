@@ -85,11 +85,17 @@ namespace GitChat {
 
 		void RemoveCurrent() {
 			var service = State.CurrentService;
+			if ( service == null ) {
+				return;
+			}
 			State.Storage.Clear(service.RepoName);
 			State.Services.Remove(service.RepoName);
 		}
 		
 		void ReplyCurrent() {
+			if ( State.CurrentService == null ) {
+				return;
+			}
 			NewStage = new ReplyStage(State);
 		}
 
