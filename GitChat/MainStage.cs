@@ -59,7 +59,7 @@ namespace GitChat {
 				Console.WriteLine("No repositories in cache");
 				return;
 			}
-			var service = State.OrderedServices[State.SelectedService];
+			var service = State.CurrentService;
 			var messages = service.ReadMessages();
 			foreach ( var msg in messages ) {
 				Console.Write(msg.Time);
@@ -83,7 +83,7 @@ namespace GitChat {
 		}
 
 		void RemoveCurrent() {
-			var service = State.OrderedServices[State.SelectedService];
+			var service = State.CurrentService;
 			State.Storage.Clear(service.RepoName);
 			State.Services.Remove(service.RepoName);
 		}
