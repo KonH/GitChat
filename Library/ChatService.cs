@@ -3,15 +3,14 @@ using System.Linq;
 
 namespace GitChat.Library {
 	public sealed class ChatService {
-		readonly CacheStorage _storage;
-		readonly GitRunner    _git;
-		readonly string       _userName;
+		readonly GitRunner _git;
+		readonly string    _userName;
 
 		public string WorkingDirectory => _git.WorkingDirectory;
+		public string RepoName         => _git.RepoName;
 
-			public ChatService(CacheStorage storage, string originUrl = null, string repoName = null) {
-			_storage  = storage;
-			_git      = new GitRunner(_storage, originUrl, repoName);
+		public ChatService(CacheStorage storage, string originUrl = null, string repoName = null) {
+			_git      = new GitRunner(storage, originUrl, repoName);
 			_userName = _git.GetUserName().Trim();
 		}
 

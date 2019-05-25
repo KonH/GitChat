@@ -1,9 +1,9 @@
 ﻿namespace GitChat {
 	class Program {
 		static void Main(string[] args) {
-			var state = new State();
+			var ui = new Interface();
 			while ( true ) {
-				state.Update();
+				ui.Update();
 			}
 		}
 	}

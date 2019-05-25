@@ -4,12 +4,15 @@ using System.IO;
 namespace GitChat.Library {
 	public sealed class GitRunner {
 		public readonly string WorkingDirectory;
+		public readonly string RepoName;
 		
 		readonly CacheStorage _storage;
 
 		public GitRunner(CacheStorage storage, string originUrl = null, string repoName = null) {
 			_storage   = storage;
-			WorkingDirectory = (repoName != null) ? Path.Combine(_storage.RootPath, repoName) : GetWorkingDirectoryFromOrigin(originUrl);
+			
+			RepoName         = repoName ?? GetRepoNameFromOrigin(originUrl);
+			WorkingDirectory = Path.Combine(_storage.RootPath, RepoName);
 			
 			TryClone(originUrl);
 		}
@@ -24,10 +27,10 @@ namespace GitChat.Library {
 			Git("clone " + originUrl, _storage.RootPath);
 		}
 
-		string GetWorkingDirectoryFromOrigin(string originUrl) {
+		string GetRepoNameFromOrigin(string originUrl) {
 			var lastSlashIndex = originUrl.LastIndexOf('/');
 			var repoName       = originUrl.Substring(lastSlashIndex + 1);
-			return Path.Combine(_storage.RootPath, repoName);
+			return repoName;
 		}
 
 		public void SendMessage(string message) {
