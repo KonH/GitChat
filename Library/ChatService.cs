@@ -6,7 +6,8 @@ namespace GitChat.Library {
 		readonly GitRunner _git;
 		readonly string    _userName;
 
-		public string RepoName => _git.RepoName;
+		public string RepoName         => _git.RepoName;
+		public bool   HasMessagesBelow => _git.HeadIndex > 0;
 
 		public ChatService(CacheStorage storage, string originUrl = null, string repoName = null) {
 			_git      = new GitRunner(storage, originUrl, repoName);
@@ -24,6 +25,18 @@ namespace GitChat.Library {
 				.Where(m => (m != null))
 				.Reverse()
 				.ToArray();
+		}
+
+		public void Update() {
+			_git.Pull();
+		}
+
+		public void MoveUp() {
+			_git.MoveUp();
+		}
+
+		public void MoveDown() {
+			_git.MoveDown();
 		}
 
 		Message ConvertStringToMessage(string str) {

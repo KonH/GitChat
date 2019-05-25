@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -5,6 +6,8 @@ namespace GitChat.Library {
 	public sealed class GitRunner {
 		public readonly string WorkingDirectory;
 		public readonly string RepoName;
+		
+		public int HeadIndex { get; private set; }
 		
 		readonly CacheStorage _storage;
 
@@ -36,37 +39,52 @@ namespace GitChat.Library {
 		public void SendMessage(string message) {
 			Pull();
 			Commit(message);
-			while ( Push().stderror.Contains("Updates were rejected because the remote contains work") ) {
+			while ( Git("push", ignoreErrors:true).stderror.Contains("Updates were rejected because the remote contains work") ) {
 				Pull();
 			}
 		}
 
 		public string[] ReadMessages() {
-			Pull();
 			return Log();
 		}
 
 		public string GetUserName() {
 			return Git("config user.name").stdout;
 		}
+
+		public void MoveUp() {
+			HeadIndex++;
+		}
+
+		public void MoveDown() {
+			if ( HeadIndex == 0 ) {
+				return;
+			}
+			HeadIndex--;
+		}
 		
 		void Commit(string message) {
 			Git($"commit -m \"{message}\" --allow-empty");
 		}
 
-		(string stdout, string stderror) Push() {
-			return Git("push");
-		}
-
-		void Pull() {
+		public void Pull() {
 			Git("pull");
 		}
 
 		string[] Log() {
-			return Git("log -n 15 --format=\"%ar^%an:%s\" --no-merges").stdout.Split('\n');
+			while ( true ) {
+				var (output, error) = Git($"log -n 15 --format=\"%ar^%an:%s\" --no-merges HEAD~{HeadIndex}", ignoreErrors: true);
+				if ( error.Contains("unknown revision") ) {
+					if ( HeadIndex > 0 ) {
+						HeadIndex--;
+						continue;
+					}
+				}
+				return output.Split('\n');
+			}
 		}
 
-		(string stdout, string stderror) Git(string command, string workingDirectory = null) {
+		(string stdout, string stderror) Git(string command, string workingDirectory = null, bool ignoreErrors = false) {
 			if ( workingDirectory == null ) {
 				workingDirectory = WorkingDirectory;
 			}
@@ -81,6 +99,10 @@ namespace GitChat.Library {
 			if ( proc != null ) {
 				proc.WaitForExit();
 				var error = proc.StandardError.ReadToEnd();
+				if ( !string.IsNullOrWhiteSpace(error) && !ignoreErrors ) {
+					Console.WriteLine($"Execution of '{command}' failed:");
+					Console.WriteLine(error);
+				}
 				var output = proc.StandardOutput.ReadToEnd();
 				return (output, error);
 			}

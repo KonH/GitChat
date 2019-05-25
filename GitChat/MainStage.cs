@@ -7,9 +7,12 @@ namespace GitChat {
 		public MainStage(State state) : base(state) {
 			KeyMapping[ConsoleKey.H] = PrevRepo;
 			KeyMapping[ConsoleKey.L] = NextRepo;
+			KeyMapping[ConsoleKey.K] = MoveUp;
+			KeyMapping[ConsoleKey.J] = MoveDown;
 			KeyMapping[ConsoleKey.O] = ChangeToOpen;
 			KeyMapping[ConsoleKey.Y] = RemoveCurrent;
 			KeyMapping[ConsoleKey.I] = ReplyCurrent;
+			KeyMapping[ConsoleKey.U] = UpdateCurrent;
 		}
 
 		public override void Update() {
@@ -70,6 +73,9 @@ namespace GitChat {
 				Console.Write(msg.Content);
 				Console.WriteLine();
 			}
+			if ( service.HasMessagesBelow ) {
+				Console.WriteLine("...");
+			}
 		}
 
 		void RenderFooter() {
@@ -99,6 +105,18 @@ namespace GitChat {
 			NewStage = new ReplyStage(State);
 		}
 
+		void UpdateCurrent() {
+			State.CurrentService?.Update();
+		}
+
+		void MoveUp() {
+			State.CurrentService?.MoveUp();
+		}
+
+		void MoveDown() {
+			State.CurrentService?.MoveDown();
+		}
+		
 		void PrevRepo() {
 			var newIndex = State.SelectedService - 1;
 			if ( newIndex < 0 ) {
